@@ -1,0 +1,30 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # 或你想触发的分支
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_SERVER }} "
+            cd /root/hello-world/hello-word && \
+            git pull origin main && \
+            docker build -t nginx-custom . && \
+            docker stop my-nginx || true && \
+            docker rm my-nginx || true && \
+            docker run -d -p 80:80 -v /root/hello-world/hello-word/dist:/usr/share/nginx/html:ro --name my-nginx nginx-custom
+          "
