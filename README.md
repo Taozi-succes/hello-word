@@ -183,3 +183,11 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ---
 
 ⭐ 如果这个项目对你有帮助，请给个 Star！
+
+
+
+docker脚本：
+            docker build -t nginx-custom . && \
+            docker stop my-nginx || true && \
+            docker rm my-nginx || true && \
+            docker run -d -p 80:80 -v /root/hello-world/hello-word/dist:/usr/share/nginx/html:ro --name my-nginx nginx-custom
